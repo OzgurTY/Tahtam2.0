@@ -1,5 +1,7 @@
 package com.tahtam.backend.model;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,5 +15,6 @@ public class Marketplace {
     private String id;
     private String name;
     private String address;
+    private List<DayOfWeek> openDays;
 
 }

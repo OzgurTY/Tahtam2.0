@@ -30,12 +30,6 @@ public class StallController {
         return new ResponseEntity<>(newStall, HttpStatus.CREATED);
     }
 
-    @GetMapping("/available")
-    public ResponseEntity<List<Stall>> getAvailableStalls() {
-        List<Stall> stalls = stallService.getAvailableStalls();
-        return new ResponseEntity<>(stalls, HttpStatus.OK);
-    }
-
     @GetMapping
     public ResponseEntity<List<Stall>> getStallsByMarketplace(@RequestParam String marketplaceId) {
         List<Stall> stalls = stallService.getStallByMarketplace(marketplaceId);

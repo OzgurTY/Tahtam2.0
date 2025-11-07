@@ -16,10 +16,5 @@ public class Stall {
     private String stallNumber;
     private String marketplaceId;
     private List<String> productTypes;
-    private StallStatus status;
-
-    public Stall() {
-        this.status = StallStatus.AVAILABLE;
-    }
 
 }
