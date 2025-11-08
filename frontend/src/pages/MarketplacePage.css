@@ -125,3 +125,78 @@
   width: 16px;
   height: 16px;
 }
+
+.marketplace-list-item {
+  /* YENİ: Liste elemanını yatayda ayırmak için */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.marketplace-list-item:last-child {
+  border-bottom: none;
+}
+
+.form-actions {
+  /* YENİ: Formdaki butonları (Ekle/Güncelle/İptal) sarmalar */
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex: 1;
+}
+
+.list-item-actions {
+  /* YENİ: Listedeki butonları (Düzenle/Sil) sarmalar */
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.edit-button {
+  /* YENİ: Düzenle butonu */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.edit-button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  /* YENİ: Sil butonu */
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.cancel-edit-button {
+  /* YENİ: İptal butonu */
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cancel-edit-button:hover {
+  background-color: #5a6268;
+}

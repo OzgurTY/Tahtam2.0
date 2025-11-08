@@ -28,11 +28,22 @@ const deleteTenant = (tenantId) => {
   return axios.delete(`${API_URL}/${tenantId}`);
 };
 
+/**
+ * Bir kiracıyı günceller.
+ * PUT /api/tenants/{id}
+ * @param {string} tenantId 
+ * @param {object} tenantData 
+ */
+const updateTenant = (tenantId, tenantData) => {
+  return axios.put(`${API_URL}/${tenantId}`, tenantData);
+};
+
 
 const tenantService = {
   getTenants,
   createTenant,
   deleteTenant,
+  updateTenant,
 };
 
 export default tenantService;

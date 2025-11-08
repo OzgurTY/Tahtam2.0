@@ -18,4 +18,8 @@ public interface RentalRepository extends MongoRepository<Rental, String> {
 
     void deleteByTenantId(String tenantId);
 
+    void deleteByMarketplaceId(String marketplaceId);
+
+    void deleteByStallId(String stallId);
+
 }

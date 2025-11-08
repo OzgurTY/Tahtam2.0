@@ -1,30 +1,36 @@
 import axios from 'axios';
 
-// Backend'imizin ana adresi
 const API_URL = 'http://localhost:2000/api/marketplaces';
 
-/**
- * Tüm pazaryerlerini backend'den çeker.
- * GET /api/marketplaces
- */
 const getMarketplaces = () => {
   return axios.get(API_URL);
 };
 
-/**
- * Yeni bir pazaryeri oluşturur.
- * POST /api/marketplaces
- * @param {object} marketplaceData (örn: { name: "Pazar Adı", address: "Adres", openDays: ["TUESDAY"] })
- */
 const createMarketplace = (marketplaceData) => {
   return axios.post(API_URL, marketplaceData);
 };
 
-// Fonksiyonları dışa aktar
+/**
+ * Bir pazaryerini günceller.
+ * PUT /api/marketplaces/{id}
+ */
+const updateMarketplace = (marketplaceId, marketplaceData) => {
+  return axios.put(`${API_URL}/${marketplaceId}`, marketplaceData);
+};
+
+/**
+ * Bir pazaryerini ID ile siler.
+ * DELETE /api/marketplaces/{id}
+ */
+const deleteMarketplace = (marketplaceId) => {
+  return axios.delete(`${API_URL}/${marketplaceId}`);
+};
+
 const marketplaceService = {
   getMarketplaces,
   createMarketplace,
-  // İleride buraya deleteMarketplace, updateMarketplace vb. ekleyeceğiz
+  updateMarketplace,
+  deleteMarketplace,
 };
 
 export default marketplaceService;

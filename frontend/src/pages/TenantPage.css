@@ -41,12 +41,6 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* .tenant-list li'nin kendi padding'ini sıfırla */
-.tenant-list li {
-  padding: 0; 
-  border-bottom: none; /* Kenarlığı .tenant-list-item'a taşıdık */
-}
-
 .tenant-list-item:last-child {
   border-bottom: none;
 }
@@ -66,4 +60,51 @@
 
 .delete-button:hover {
   background-color: #c82333;
+}
+
+.form-actions {
+  /* YENİ: Formdaki butonları (Ekle/Güncelle/İptal) sarmalar */
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end; /* Butonları sağa yaslar */
+  align-items: flex-end;
+  flex: 1; /* Formda kalan boşluğu doldurur */
+}
+
+.list-item-actions {
+  /* YENİ: Listedeki butonları (Düzenle/Sil) sarmalar */
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0; /* Ekran küçülse bile butonların küçülmemesini sağlar */
+}
+
+.edit-button {
+  /* YENİ: Düzenle butonu stili (Modern ve bilgilendirici mavi) */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.edit-button:hover {
+  background-color: #0056b3;
+}
+
+.cancel-edit-button {
+  /* YENİ: İptal butonu stili (Modern ve nötr gri) */
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 20px; /* Submit butonuyla aynı boyutta */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cancel-edit-button:hover {
+  background-color: #5a6268;
 }

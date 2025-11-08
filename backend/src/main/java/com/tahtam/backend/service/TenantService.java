@@ -25,6 +25,14 @@ public class TenantService {
         return tenantRepository.save(tenant);
     }
 
+    public Tenant updateTenant(String tenantId,Tenant tenantDetails) {
+        Tenant existingTenant = tenantRepository.findById(tenantId).orElseThrow(() -> new IllegalStateException("Kiracı bulunamadı: " + tenantId));
+        existingTenant.setName(tenantDetails.getName());
+        existingTenant.setPhoneNumber(tenantDetails.getPhoneNumber());
+        existingTenant.setProductSold(tenantDetails.getProductSold());
+        return tenantRepository.save(existingTenant);
+    }
+
     public void deleteTenant(String tenantId) {
         rentalRepository.deleteByTenantId(tenantId);
         tenantRepository.deleteById(tenantId);

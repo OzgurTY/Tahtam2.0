@@ -21,9 +21,27 @@ const createStall = (stallData) => {
   return axios.post(API_URL, stallData);
 };
 
+/**
+ * Bir tahtayı günceller.
+ * PUT /api/stalls/{id}
+ */
+const updateStall = (stallId, stallData) => {
+  return axios.put(`${API_URL}/${stallId}`, stallData);
+};
+
+/**
+ * Bir tahtayı ID ile siler.
+ * DELETE /api/stalls/{id}
+ */
+const deleteStall = (stallId) => {
+  return axios.delete(`${API_URL}/${stallId}`);
+};
+
 const stallService = {
   getStallsByMarketplace,
   createStall,
+  updateStall,
+  deleteStall,
 };
 
 export default stallService;

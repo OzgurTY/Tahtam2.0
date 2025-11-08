@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import marketplaceService from '../services/marketplaceService';
+import ConfirmationModal from '../components/ConfirmationModal';
 import './MarketplacePage.css';
 
-// YENİ: Backend'deki DayOfWeek enum'u ile eşleşen sabit
-// (Büyük/küçük harf duyarlılığı için backend'deki gibi BÜYÜK harf kullanıyoruz)
 const DAYS_OF_WEEK = [
-  "MONDAY",
-  "TUESDAY",
-  "WEDNESDAY",
-  "THURSDAY",
-  "FRIDAY",
-  "SATURDAY",
-  "SUNDAY"
+  "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
 ];
 
 function MarketplacePage() {
@@ -19,11 +12,14 @@ function MarketplacePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Form state'leri DEĞİŞTİ
+  // Form state'leri
   const [formName, setFormName] = useState('');
   const [formAddress, setFormAddress] = useState('');
-  // DEĞİŞTİ: String yerine Set (küme) kullanarak seçili günleri tutacağız
   const [selectedDays, setSelectedDays] = useState(new Set());
+
+  const [editingMarketplaceId, setEditingMarketplaceId] = useState(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [marketplaceToDelete, setMarketplaceToDelete] = useState(null);
 
   useEffect(() => {
     fetchMarketplaces();
@@ -43,61 +39,102 @@ function MarketplacePage() {
       });
   };
 
-  // YENİ: Checkbox değişimlerini yöneten fonksiyon
+  const resetForm = () => {
+    setFormName('');
+    setFormAddress('');
+    setSelectedDays(new Set());
+    setEditingMarketplaceId(null);
+    setError(null);
+  };
+
   const handleDayChange = (event) => {
     const { value, checked } = event.target;
-
-    // Set state'ini kopyalayarak güncelle (immutable pattern)
     const newSelectedDays = new Set(selectedDays);
     if (checked) {
-      newSelectedDays.add(value); // İşaretlendiyse ekle
+      newSelectedDays.add(value);
     } else {
-      newSelectedDays.delete(value); // İşaret kaldırıldıysa çıkar
+      newSelectedDays.delete(value);
     }
     setSelectedDays(newSelectedDays);
   };
 
-  // Formu gönderme (Submit) fonksiyonu GÜNCELLENDİ
   const handleSubmit = (event) => {
     event.preventDefault();
     setError(null);
 
-    // DEĞİŞTİ: String'i split() yapmak yerine Set'i Array'e çevir
     const openDaysArray = Array.from(selectedDays);
-
     if (openDaysArray.length === 0) {
       setError("Lütfen en az bir açık gün seçin.");
       return;
     }
 
-    const newMarketplace = {
+    const marketplaceData = {
       name: formName,
       address: formAddress,
       openDays: openDaysArray
     };
 
-    marketplaceService.createMarketplace(newMarketplace)
+    const apiCall = editingMarketplaceId
+      ? marketplaceService.updateMarketplace(editingMarketplaceId, marketplaceData)
+      : marketplaceService.createMarketplace(marketplaceData);
+
+    apiCall
       .then(() => {
-        fetchMarketplaces(); 
-        // Formu temizle
-        setFormName('');
-        setFormAddress('');
-        setSelectedDays(new Set()); // DEĞİŞTİ: Set'i sıfırla
+        fetchMarketplaces();
+        resetForm();
       })
       .catch(err => {
-        setError('Pazaryeri eklenirken bir hata oluştu.');
+        setError(editingMarketplaceId 
+          ? 'Pazaryeri güncellenirken bir hata oluştu.'
+          : 'Pazaryeri eklenirken bir hata oluştu.');
         console.error(err);
       });
   };
 
-  // Helper: Günü Türkçeleştirmek için (isteğe bağlı)
-  const a = (day) => {
+  const handleEditClick = (market) => {
+    setFormName(market.name);
+    setFormAddress(market.address);
+    setSelectedDays(new Set(market.openDays || [])); 
+    setEditingMarketplaceId(market.id);
+    window.scrollTo(0, 0);
+  };
+
+  const handleCancelEdit = () => {
+    resetForm();
+  };
+
+  const handleDeleteClick = (market) => {
+    setMarketplaceToDelete(market);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!marketplaceToDelete) return;
+    setError(null);
+    marketplaceService.deleteMarketplace(marketplaceToDelete.id)
+      .then(() => {
+        fetchMarketplaces();
+        closeConfirmModal();
+      })
+      .catch(err => {
+        setError('Pazaryeri silinirken bir hata oluştu. (Not: Önce bağlı tahtaları silmeniz gerekebilir)');
+        console.error(err);
+        closeConfirmModal();
+      });
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setMarketplaceToDelete(null);
+  };
+
+  const translateDay = (day) => {
       const map = {
-          "MONDAY": "Pazartesi", "TUESDAY": "Salı", "WEDNESDAY": "Çarşamba",
-          "THURSDAY": "Perşembe", "FRIDAY": "Cuma", "SATURDAY": "Cumartesi", "SUNDAY": "Pazar"
+          "MONDAY": "Pzt", "TUESDAY": "Salı", "WEDNESDAY": "Çrş",
+          "THURSDAY": "Prş", "FRIDAY": "Cuma", "SATURDAY": "Cmt", "SUNDAY": "Paz"
       };
       return map[day] || day;
-  }
+  };
 
   return (
     <div className="page-container">
@@ -105,30 +142,17 @@ function MarketplacePage() {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Yeni Pazar Ekleme Formu GÜNCELLENDİ */}
       <div className="card">
-        <h3>Yeni Pazaryeri Ekle</h3>
+        <h3>{editingMarketplaceId ? "Pazaryerini Düzenle" : "Yeni Pazaryeri Ekle"}</h3>
         <form onSubmit={handleSubmit} className="marketplace-form">
           <div className="form-group">
             <label>Pazar Adı:</label>
-            <input 
-              type="text" 
-              value={formName}
-              onChange={(e) => setFormName(e.target.value)}
-              required 
-            />
+            <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>Adres:</label>
-            <input 
-              type="text" 
-              value={formAddress}
-              onChange={(e) => setFormAddress(e.target.value)}
-              required 
-            />
+            <input type="text" value={formAddress} onChange={(e) => setFormAddress(e.target.value)} required />
           </div>
-
-          {/* --- DEĞİŞİKLİK: Text input yerine Checkbox grubu --- */}
           <div className="form-group full-width">
             <label>Açık Günler:</label>
             <div className="checkbox-group">
@@ -140,19 +164,25 @@ function MarketplacePage() {
                     checked={selectedDays.has(day)}
                     onChange={handleDayChange}
                   />
-                  {/* Backend BÜYÜK harf beklediği için değeri `day`, görüneni `translate(day)` yaptık */}
-                  {a(day)}
+                  {translateDay(day)}
                 </label>
               ))}
             </div>
           </div>
-          {/* --- DEĞİŞİKLİK SONU --- */}
 
-          <button type="submit" className="submit-button">Ekle</button>
+          <div className="form-actions">
+            <button type="submit" className="submit-button">
+              {editingMarketplaceId ? "Güncelle" : "Ekle"}
+            </button>
+            {editingMarketplaceId && (
+              <button type="button" className="cancel-edit-button" onClick={handleCancelEdit}>
+                İptal
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
-      {/* Mevcut Pazaryerleri Listesi (Görünüm GÜNCELLENDİ) */}
       <div className="card">
         <h3>Mevcut Pazaryerleri</h3>
         {isLoading ? (
@@ -160,16 +190,45 @@ function MarketplacePage() {
         ) : (
           <ul className="marketplace-list">
             {marketplaces.map(market => (
-              <li key={market.id}>
-                <strong>{market.name}</strong> ({market.address})
-                <small>
-                  Açık Günler: {market.openDays?.map(a).join(', ') || 'Belirtilmemiş'}
-                </small>
+              <li key={market.id} className="marketplace-list-item">
+                <div>
+                  <strong>{market.name}</strong> ({market.address})
+                  <small>
+                    Açık Günler: {market.openDays?.map(translateDay).join(', ') || 'Belirtilmemiş'}
+                  </small>
+                </div>
+                <div className="list-item-actions">
+                  <button 
+                    className="edit-button"
+                    onClick={() => handleEditClick(market)}
+                  >
+                    Düzenle
+                  </button>
+                  <button 
+                    className="delete-button"
+                    onClick={() => handleDeleteClick(market)}
+                  >
+                    Sil
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {/* --- ONAYLAMA MODALI --- */}
+      <ConfirmationModal
+        show={isConfirmModalOpen}
+        onClose={closeConfirmModal}
+        onConfirm={handleConfirmDelete}
+        title="Pazaryerini Sil"
+        message={
+          marketplaceToDelete 
+            ? `'${marketplaceToDelete.name}' isimli pazaryerini silmek istediğinizden emin misiniz? Bu işlem, bu pazara ait tüm tahtaları ve kiralama kayıtlarını silecektir.`
+            : "Bu pazaryerini silmek istediğinizden emin misiniz?"
+        }
+      />
     </div>
   );
 }

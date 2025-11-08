@@ -12,4 +12,6 @@ public interface StallRepository extends MongoRepository<Stall, String> {
     
     List<Stall> findByMarketplaceId(String marketplaceId);
 
+    void deleteByMarketplaceId(String marketplaceId);
+
 }
