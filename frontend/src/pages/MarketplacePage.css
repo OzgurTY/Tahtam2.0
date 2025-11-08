@@ -94,3 +94,34 @@
   border-radius: 4px;
   margin-bottom: 20px;
 }
+
+/* Formun tamamını kaplaması için */
+.form-group.full-width {
+  flex-basis: 100%;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px; /* Dikey ve yatay boşluk */
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Kutucuk ile yazı arası boşluk */
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.checkbox-item input[type="checkbox"] {
+  cursor: pointer;
+  /* Daha modern bir görünüm için tarayıcı stillerini kullanabilir veya özelleştirebilirsiniz */
+  width: 16px;
+  height: 16px;
+}

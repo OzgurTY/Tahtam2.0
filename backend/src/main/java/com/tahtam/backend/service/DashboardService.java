@@ -1,7 +1,6 @@
 package com.tahtam.backend.service;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,14 +29,11 @@ public class DashboardService {
     public MarketDaySummary getMarketDaySummary(String marketplaceId, LocalDate date) {
         Marketplace marketplace = marketplaceRepository.findById(marketplaceId).orElseThrow(() -> new IllegalStateException("Pazaryeri bulunamadı."));
 
-        boolean isOpen = marketplace.getOpenDays() != null && marketplace.getOpenDays().contains(date.getDayOfWeek());
+        java.time.DayOfWeek javaDay = date.getDayOfWeek();
+
+        boolean isOpen = marketplace.getOpenDays() != null && marketplace.getOpenDays().stream().anyMatch(myDay -> myDay.name().equals(javaDay.name()));
 
         if (!isOpen) {
-            MarketDaySummary summary = new MarketDaySummary();
-            summary.setTotalStalls(0);
-            summary.setBookedStallsCount(0);
-            summary.setAvailableStallsCount(0);
-            summary.setAvailableStalls(Collections.emptyList());
             throw new IllegalStateException("Pazaryeri seçilen tarihte (" + date + ") açık değil.");
         }
 

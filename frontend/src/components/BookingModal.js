@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import tenantService from '../services/tenantService';
-import bookingService from '../services/bookingService';
-import './BookingModal.css'; // Stil dosyamız
+import rentalService from '../services/rentalService'; // <-- DEĞİŞİKLİK: 'bookingService' 'rentalService' oldu
+import './BookingModal.css';
 
 /**
  * Kiralama yapmak için açılan modal (popup) bileşeni.
  * @param {object} props
- * @param {boolean} props.show Modalın görünür olup olmadığı
- * @param {function} props.onClose Modalı kapatma fonksiyonu
+ * @param {boolean} props.show
+ * @param {function} props.onClose
  * @param {object} props.stall Kiralanacak tahta
- * @param {string} props.day Kiralanacak gün (Örn: "TUESDAY")
- * @param {string} props.marketId Kiralamanın yapıldığı pazarın ID'si
- * @param {function} props.onBookingSuccess Başarılı kiralama sonrası çağrılacak fonksiyon
+ * @param {string} props.rentalDate Kiralanacak tarih (Örn: "2025-11-08")
+ * @param {string} props.marketId
+ * @param {function} props.onBookingSuccess
  */
-function BookingModal({ show, onClose, stall, day, marketId, onBookingSuccess }) {
-  const [tenants, setTenants] = useState([]); // Kiracı listesi
+function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuccess }) { // <-- DEĞİŞİKLİK: 'day' prop'u 'rentalDate' oldu
+
+  const [tenants, setTenants] = useState([]);
   const [selectedTenant, setSelectedTenant] = useState('');
   const [price, setPrice] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Modal her açıldığında kiracı listesini çek
   useEffect(() => {
     if (show) {
       tenantService.getTenants()
@@ -32,22 +32,22 @@ function BookingModal({ show, onClose, stall, day, marketId, onBookingSuccess })
           console.error(err);
         });
     }
-  }, [show]); // Sadece 'show' true olduğunda çalışır
+  }, [show]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    const bookingData = {
+    const rentalData = { // <-- Değişti
       stallId: stall.id,
       tenantId: selectedTenant,
       marketplaceId: marketId,
-      dayOfWeek: day,
+      rentalDate: rentalDate, // <-- DEĞİŞİKLİK: 'dayOfWeek' yerine 'rentalDate'
       price: parseFloat(price)
     };
 
-     bookingService.createBooking(bookingData)
+    rentalService.createRental(rentalData) // <-- DEĞİŞİKLİK: 'rentalService' kullanılıyor
       .then(() => {
         setIsLoading(false);
         onBookingSuccess(); // Dashboard'u yenilemek için
@@ -56,26 +56,20 @@ function BookingModal({ show, onClose, stall, day, marketId, onBookingSuccess })
       .catch(err => {
         setIsLoading(false);
         if (err.response && err.response.status === 409) {
-          setError("Bu tahta bu gün için zaten dolu.");
+          // Backend'den gelen "zaten dolu" mesajını göster
+          setError(err.response.data);
         } else {
           setError("Kiralama yapılamadı.");
         }
         console.error(err);
       });
-    
   };
-
-  // handleSubmit içindeki `bookingService.createBooking` kısmını DÜZELTELİM:
-  // Kodu test etmek için `onBookingSuccess(bookingData);` satırını siliyoruz
-  // ve yorum satırı olan `bookingService` kısmını açıyoruz.
-  // Ayrıca `bookingService` import'unu dosyanın en üstüne ekliyoruz.
 
   if (!show) {
     return null;
   }
 
   const handleClose = () => {
-    // Modal kapanırken form verilerini sıfırla
     setSelectedTenant('');
     setPrice('');
     setError(null);
@@ -87,7 +81,8 @@ function BookingModal({ show, onClose, stall, day, marketId, onBookingSuccess })
     <div className="modal-overlay">
       <div className="modal-content card">
         <h2>Tahta Kirala</h2>
-        <p><strong>Tahta:</strong> {stall.stallNumber} | <strong>Gün:</strong> {day}</p>
+        {/* DEĞİŞİKLİK: 'day' yerine 'rentalDate' göster */}
+        <p><strong>Tahta:</strong> {stall.stallNumber} | <strong>Tarih:</strong> {rentalDate}</p>
 
         {error && <div className="error-message">{error}</div>}
 
