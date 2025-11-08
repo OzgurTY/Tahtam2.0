@@ -59,3 +59,30 @@
 .stall-list li:last-child { border-bottom: none; }
 .stall-list strong { color: #222; margin-right: 10px; }
 .stall-list small { display: block; color: #777; font-size: 13px; margin-top: 5px; }
+
+.stall-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stall-list-item:last-child {
+  border-bottom: none;
+}
+
+.book-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.book-button:hover {
+  background-color: #218838;
+}
