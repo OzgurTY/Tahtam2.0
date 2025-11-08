@@ -13,15 +13,26 @@ const getTenants = () => {
 /**
  * Yeni bir kiracı oluşturur.
  * POST /api/tenants
- * @param {object} tenantData (örn: { name: "Ahmet Yılmaz", phoneNumber: "...", productSold: "..." })
+ * @param {object} tenantData
  */
 const createTenant = (tenantData) => {
   return axios.post(API_URL, tenantData);
 };
 
+/**
+ * Bir kiracıyı ID ile siler.
+ * DELETE /api/tenants/{id}
+ * @param {string} tenantId 
+ */
+const deleteTenant = (tenantId) => {
+  return axios.delete(`${API_URL}/${tenantId}`);
+};
+
+
 const tenantService = {
   getTenants,
   createTenant,
+  deleteTenant,
 };
 
 export default tenantService;

@@ -31,3 +31,39 @@
   font-size: 14px;
   margin-right: 15px;
 }
+
+.tenant-list-item {
+  /* YENİ: Liste elemanını yatayda ayırmak için */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px; /* Padding'i 'li'ye taşıdık */
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* .tenant-list li'nin kendi padding'ini sıfırla */
+.tenant-list li {
+  padding: 0; 
+  border-bottom: none; /* Kenarlığı .tenant-list-item'a taşıdık */
+}
+
+.tenant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* YENİ: Silme butonu stili (Modern ve tehlike belirten kırmızı) */
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 10px; /* Diğer butonlarla arasına boşluk koyar */
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}

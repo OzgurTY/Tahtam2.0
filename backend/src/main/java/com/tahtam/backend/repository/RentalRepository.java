@@ -16,4 +16,6 @@ public interface RentalRepository extends MongoRepository<Rental, String> {
 
     List<Rental> findByMarketplaceIdAndRentalDate(String marketplaceId, LocalDate rentalDate);
 
+    void deleteByTenantId(String tenantId);
+
 }

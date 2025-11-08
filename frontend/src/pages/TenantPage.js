@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import tenantService from '../services/tenantService';
-import './TenantPage.css'; // Stil dosyamız
+import './TenantPage.css';
 
 function TenantPage() {
-  // State'ler
-  const [tenants, setTenants] = useState([]); // Kiracı listesi
+  const [tenants, setTenants] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Form state'leri
   const [formName, setFormName] = useState('');
   const [formPhone, setFormPhone] = useState('');
   const [formProduct, setFormProduct] = useState('');
 
-  // Sayfa ilk yüklendiğinde kiracıları çek
   useEffect(() => {
     fetchTenants();
   }, []);
 
-  // Kiracıları backend'den çeken fonksiyon
   const fetchTenants = () => {
     setIsLoading(true);
     tenantService.getTenants()
@@ -33,7 +29,6 @@ function TenantPage() {
       });
   };
 
-  // Formu gönderme (Submit) fonksiyonu
   const handleSubmit = (event) => {
     event.preventDefault();
     setError(null);
@@ -46,8 +41,7 @@ function TenantPage() {
 
     tenantService.createTenant(newTenant)
       .then(() => {
-        fetchTenants(); // Listeyi güncelle
-        // Formu temizle
+        fetchTenants();
         setFormName('');
         setFormPhone('');
         setFormProduct('');
@@ -57,6 +51,23 @@ function TenantPage() {
         console.error(err);
       });
   };
+
+  // --- YENİ SİLME FONKSİYONU ---
+  const handleDelete = (tenantId, tenantName) => {
+    // Kullanıcıya onaylat
+    if (window.confirm(`'${tenantName}' isimli kiracıyı silmek istediğinizden emin misiniz? Bu işlem, kiracının tüm kiralama geçmişini de silecektir.`)) {
+      setError(null);
+      tenantService.deleteTenant(tenantId)
+        .then(() => {
+          fetchTenants(); // Silme başarılıysa listeyi yenile
+        })
+        .catch(err => {
+          setError('Kiracı silinirken bir hata oluştu.');
+          console.error(err);
+        });
+    }
+  };
+  // --- YENİ FONKSİYON SONU ---
 
   return (
     <div className="page-container">
@@ -101,7 +112,7 @@ function TenantPage() {
         </form>
       </div>
 
-      {/* Mevcut Kiracılar Listesi */}
+      {/* Mevcut Kiracılar Listesi GÜNCELLENDİ */}
       <div className="card">
         <h3>Kiracılar</h3>
         {isLoading ? (
@@ -109,10 +120,22 @@ function TenantPage() {
         ) : (
           <ul className="tenant-list">
             {tenants.map(tenant => (
-              <li key={tenant.id}>
-                <strong>{tenant.name}</strong>
-                <small>Telefon: {tenant.phoneNumber}</small>
-                <small>Ürün: {tenant.productSold}</small>
+              <li key={tenant.id} className="tenant-list-item"> {/* YENİ CLASS */}
+                <div>
+                  <strong>{tenant.name}</strong>
+                  <small>Telefon: {tenant.phoneNumber}</small>
+                  <small>Ürün: {tenant.productSold}</small>
+                </div>
+                {/* --- YENİ BUTON ALANI --- */}
+                <div>
+                  <button 
+                    className="delete-button"
+                    onClick={() => handleDelete(tenant.id, tenant.name)}
+                  >
+                    Sil
+                  </button>
+                  {/* İleride buraya "Düzenle" butonu da gelecek */}
+                </div>
               </li>
             ))}
           </ul>
