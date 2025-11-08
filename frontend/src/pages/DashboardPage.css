@@ -1,0 +1,61 @@
+.dashboard-controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.dashboard-controls .form-group {
+  flex: 1;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.summary-card h4 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.summary-card span {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Boşta olanlara vurgu */
+.summary-card.available span {
+  color: #28a745; 
+}
+
+/* Dolu olanlara vurgu */
+.summary-card.booked span {
+  color: #dc3545;
+}
+
+/* Stall-list stilleri StallPage.css ile aynı,
+   eğer ortak bir CSS dosyasına almadıysanız buraya da ekleyebilirsiniz. */
+.stall-list {
+  list-style-type: none;
+  padding: 0;
+}
+.stall-list li {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.stall-list li:last-child { border-bottom: none; }
+.stall-list strong { color: #222; margin-right: 10px; }
+.stall-list small { display: block; color: #777; font-size: 13px; margin-top: 5px; }
