@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tahtam.backend.dto.IncomeReportDto;
 import com.tahtam.backend.dto.MarketDaySummary;
 import com.tahtam.backend.service.DashboardService;
 
@@ -34,5 +35,14 @@ public class DashboardController {
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/income-report")
+    public ResponseEntity<IncomeReportDto> getIncomeRepor(@RequestParam String startDate, @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        IncomeReportDto report = dashboardService.getIncomeReport(start, end);
+        return new ResponseEntity<>(report, HttpStatus.OK);
     }
 }

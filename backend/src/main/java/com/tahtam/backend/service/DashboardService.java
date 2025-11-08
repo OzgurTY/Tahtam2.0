@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tahtam.backend.dto.IncomeReportDto;
 import com.tahtam.backend.dto.MarketDaySummary;
 import com.tahtam.backend.model.Marketplace;
 import com.tahtam.backend.model.Rental;
@@ -49,6 +50,17 @@ public class DashboardService {
         summary.setAvailableStalls(availableStalls);
 
         return summary;
+    }
+
+    public IncomeReportDto getIncomeReport(LocalDate starDate, LocalDate endDate) {
+        List<Rental> rentals = rentalRepository.findByRentalDateBetween(starDate, endDate);
+        double totalIncome = rentals.stream().mapToDouble(Rental::getPrice).sum();
+        long totalRentals = rentals.size();
+
+        IncomeReportDto report = new IncomeReportDto();
+        report.setTotalIncome(totalIncome);
+        report.setTotalRentals(totalRentals);
+        return report;
     }
 
 }

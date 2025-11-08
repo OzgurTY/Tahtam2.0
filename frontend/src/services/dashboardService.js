@@ -14,8 +14,20 @@ const getMarketDaySummary = (marketplaceId, date) => {
   });
 };
 
+/**
+ * Belirli bir tarih aralığı için gelir raporunu getirir.
+ * @param {string} startDate (YYYY-MM-DD)
+ * @param {string} endDate (YYYY-MM-DD)
+ */
+const getIncomeReport = (startDate, endDate) => {
+  return axios.get(`${API_URL}/income-report`, {
+    params: { startDate, endDate }
+  });
+};
+
 const dashboardService = {
   getMarketDaySummary,
+  getIncomeReport,
 };
 
 export default dashboardService;
