@@ -1,0 +1,46 @@
+.marketplace-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.stall-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.stall-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.stall-list li {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stall-list li:last-child {
+  border-bottom: none;
+}
+
+.stall-list strong {
+  color: #222;
+  margin-right: 10px;
+}
+
+.stall-list small {
+  display: block;
+  color: #777;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* .card, .form-group, .submit-button, .error-message, .page-container
+   MarketplacePage.css dosyasından (bir önceki adımda) zaten tanımlanmıştı.
+   Eğer stilleri ayırmak isterseniz, o stilleri buraya kopyalayabilirsiniz,
+   ancak daha iyi bir yöntem bu ortak stilleri (card, form-group vb.)
+   index.css veya App.css'e taşımaktır. Şimdilik bu şekilde çalışacaktır. */

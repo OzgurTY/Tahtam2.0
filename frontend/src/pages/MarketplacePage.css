@@ -1,0 +1,96 @@
+.page-container {
+  max-width: 900px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+  margin-top: 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  color: #333;
+}
+
+.marketplace-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  align-self: flex-end; /* Formdaki diğer elemanlarla aynı hizada kalır */
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.marketplace-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.marketplace-list li {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.marketplace-list li:last-child {
+  border-bottom: none;
+}
+
+.marketplace-list strong {
+  color: #222;
+  margin-right: 10px;
+}
+
+.marketplace-list small {
+  display: block;
+  color: #777;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
