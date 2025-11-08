@@ -1,5 +1,6 @@
 package com.tahtam.backend.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,37 +16,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tahtam.backend.model.Booking;
-import com.tahtam.backend.model.DayOfWeek;
-import com.tahtam.backend.service.BookingService;
+import com.tahtam.backend.model.Rental;
+import com.tahtam.backend.service.RentalService;
 
 @RestController
 @RequestMapping("/api/bookings")
 @CrossOrigin(origins = "http://localhost:3000")
-public class BookingController {
+public class RentalController {
     
     @Autowired
-    private BookingService bookingService;
+    private RentalService rentalService;
 
     @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody Booking booking) {
+    public ResponseEntity<?> createRental(@RequestBody Rental rental) {
         try {
-            Booking newBooking = bookingService.createBooking(booking);
-            return new ResponseEntity<>(newBooking, HttpStatus.CREATED);
+            Rental newRental = rentalService.createRental(rental);
+            return new ResponseEntity<>(newRental, HttpStatus.CREATED);
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<Booking>> getBookings(@RequestParam String marketplaceId, @RequestParam DayOfWeek dayOfWeek) {
-        List<Booking> bookings = bookingService.getBookingByMarketplaceAndDay(marketplaceId, dayOfWeek);
-        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    public ResponseEntity<List<Rental>> getRentals(@RequestParam String marketplaceId, @RequestParam String date) {
+        LocalDate rentalDate = LocalDate.parse(date);
+        List<Rental> rentals = rentalService.getRentalsByMarketplaceAndDate(marketplaceId, rentalDate);
+        return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBooking(@PathVariable String id) {
-        bookingService.deleteBooking(id);
+    public ResponseEntity<Void> deleteRental(@PathVariable String id) {
+        rentalService.deleteRental(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

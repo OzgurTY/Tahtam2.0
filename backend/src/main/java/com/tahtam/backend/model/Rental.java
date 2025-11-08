@@ -1,13 +1,15 @@
 package com.tahtam.backend.model;
 
+import java.time.LocalDate;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
-@Document(collection = "bookings")
+@Document(collection = "rentals")
 @Data
-public class Booking {
+public class Rental {
     
     @Id
     private String id;
@@ -15,7 +17,7 @@ public class Booking {
     private String tenantId;
     private String marketplaceId;
 
-    private DayOfWeek dayOfWeek;
+    private LocalDate rentalDate;
 
     private Double price;
 
