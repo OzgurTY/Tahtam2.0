@@ -20,7 +20,7 @@ import com.tahtam.backend.model.Rental;
 import com.tahtam.backend.service.RentalService;
 
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/api/rentals")
 @CrossOrigin(origins = "http://localhost:3000")
 public class RentalController {
     
