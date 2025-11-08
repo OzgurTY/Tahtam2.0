@@ -39,6 +39,12 @@ public class StallController {
         return new ResponseEntity<>(stalls, HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Stall>> getAllStalls() {
+        List<Stall> stalls = stallService.getAllStalls();
+        return new ResponseEntity<>(stalls, HttpStatus.OK);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStall(@PathVariable String id, @RequestBody Stall stallDetails) {
         try {

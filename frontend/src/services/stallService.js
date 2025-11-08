@@ -37,11 +37,16 @@ const deleteStall = (stallId) => {
   return axios.delete(`${API_URL}/${stallId}`);
 };
 
+const getAllStalls = () => {
+  return axios.get(`${API_URL}/all`);
+};
+
 const stallService = {
   getStallsByMarketplace,
   createStall,
   updateStall,
   deleteStall,
+  getAllStalls,
 };
 
 export default stallService;

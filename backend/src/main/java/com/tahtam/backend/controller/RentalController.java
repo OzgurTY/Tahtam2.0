@@ -44,6 +44,12 @@ public class RentalController {
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Rental>> getAllRentals() {
+        List<Rental> rentals = rentalService.getAllRentals();
+        return new ResponseEntity<>(rentals, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRental(@PathVariable String id) {
         rentalService.deleteRental(id);

@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import MarketplacePage from './pages/MarketplacePage';
 import StallPage from './pages/StallPage';
 import TenantPage from './pages/TenantPage';
+import RentalLogPage from './pages/RentalLogPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         {/* Layout içindeki Outlet'e yüklenecek sayfalar */}
         <Route index element={<DashboardPage />} />
+        <Route path="rentals" element={<RentalLogPage />} /> {/* <-- YENİ ROUTE */}
         <Route path="marketplaces" element={<MarketplacePage />} />
         <Route path="stalls" element={<StallPage />} />
         <Route path="tenants" element={<TenantPage />} />

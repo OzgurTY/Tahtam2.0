@@ -12,8 +12,13 @@ const createRental = (rentalData) => {
   return axios.post(API_URL, rentalData);
 };
 
+const getAllRentals = () => {
+  return axios.get(`${API_URL}/all`);
+};
+
 const rentalService = {
   createRental,
+  getAllRentals,
 };
 
 export default rentalService;

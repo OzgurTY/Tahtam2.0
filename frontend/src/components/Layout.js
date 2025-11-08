@@ -11,6 +11,7 @@ function Layout() {
                 </div>
                 <ul>
                     <li><Link to="/">Dashboard</Link></li>
+                    <li><Link to="/rentals">Kiralama Kayıtları</Link></li>
                     <li><Link to="/marketplaces">Pazaryerleri</Link></li>
                     <li><Link to="/stalls">Tahtalar</Link></li>
                     <li><Link to="/tenants">Kiracılar</Link></li>

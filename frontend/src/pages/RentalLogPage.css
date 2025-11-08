@@ -1,0 +1,27 @@
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.log-table th, .log-table td {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.log-table th {
+  background-color: #f9f9f9;
+  color: #333;
+  font-weight: 600;
+}
+
+.log-table tbody tr:hover {
+  background-color: #f7f7f7;
+}
+
+.log-table td:last-child {
+  font-weight: 600;
+  color: #007bff;
+  text-align: right;
+}

@@ -37,4 +37,8 @@ public class StallService {
         stallRepository.deleteById(stallId);
     }
 
+    public List<Stall> getAllStalls() {
+        return stallRepository.findAll();
+    }
+
 }

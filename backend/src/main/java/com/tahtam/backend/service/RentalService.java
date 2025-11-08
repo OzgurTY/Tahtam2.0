@@ -32,4 +32,8 @@ public class RentalService {
         rentalRepository.deleteById(rentalId);
     }
 
+    public List<Rental> getAllRentals() {
+        return rentalRepository.findAll();
+    }
+
 }
