@@ -16,9 +16,19 @@ const getAllRentals = () => {
   return axios.get(`${API_URL}/all`);
 };
 
+const createBatchRental = (batchData) => {
+  return axios.post(`${API_URL}/batch`, batchData);
+};
+
+const deleteRental = (rentalId) => {
+  return axios.get(`${API_URL}/${rentalId}`);
+}
+
 const rentalService = {
   createRental,
   getAllRentals,
+  createBatchRental,
+  deleteRental,
 };
 
 export default rentalService;

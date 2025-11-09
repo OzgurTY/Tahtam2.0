@@ -25,3 +25,17 @@
   color: #007bff;
   text-align: right;
 }
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+.delete-button:hover {
+  background-color: #c82333;
+}

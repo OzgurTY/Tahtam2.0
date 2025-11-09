@@ -7,5 +7,12 @@ public enum DayOfWeek {
     THURSDAY,
     FRIDAY,
     SATURDAY,
-    SUNDAY
+    SUNDAY,
+    Pazartesi,
+    Salı,
+    Çarşamba,
+    Perşembe,
+    Cuma,
+    Cumartesi,
+    Pazar
 }

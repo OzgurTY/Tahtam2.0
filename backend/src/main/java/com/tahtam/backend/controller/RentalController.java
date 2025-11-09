@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tahtam.backend.dto.BatchRentalRequest;
 import com.tahtam.backend.model.Rental;
 import com.tahtam.backend.service.RentalService;
 
@@ -32,6 +33,16 @@ public class RentalController {
         try {
             Rental newRental = rentalService.createRental(rental);
             return new ResponseEntity<>(newRental, HttpStatus.CREATED);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<?> createBatchRentals(@RequestBody BatchRentalRequest request) {
+        try {
+            List<Rental> newRentals = rentalService.createBatchRentals(request);
+            return new ResponseEntity<>(newRentals, HttpStatus.OK);
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }

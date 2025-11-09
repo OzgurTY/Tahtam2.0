@@ -1,25 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import tenantService from '../services/tenantService';
-import rentalService from '../services/rentalService'; // <-- DEĞİŞİKLİK: 'bookingService' 'rentalService' oldu
+import rentalService from '../services/rentalService';
 import './BookingModal.css';
 
-/**
- * Kiralama yapmak için açılan modal (popup) bileşeni.
- * @param {object} props
- * @param {boolean} props.show
- * @param {function} props.onClose
- * @param {object} props.stall Kiralanacak tahta
- * @param {string} props.rentalDate Kiralanacak tarih (Örn: "2025-11-08")
- * @param {string} props.marketId
- * @param {function} props.onBookingSuccess
- */
-function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuccess }) { // <-- DEĞİŞİKLİK: 'day' prop'u 'rentalDate' oldu
+// Günü (TUESDAY) ve Ayı (Kasım) almak için yardımcı
+const getDayAndMonthFromDate = (dateString) => {
+    const date = new Date(dateString + "T00:00:00");
+    const day = date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase(); // "TUESDAY"
+    const monthName = date.toLocaleDateString('tr-TR', { month: 'long' }); // "Kasım"
+    const year = date.getFullYear(); // 2025
+    const month = date.getMonth() + 1; // 11 (Kasım için 1-12 arası)
+    return { day, monthName, year, month };
+};
+
+const translateDay = (day) => {
+  const map = {
+    "MONDAY": "Pazartesi",
+    "TUESDAY": "Salı",
+    "WEDNESDAY": "Çarşamba",
+    "THURSDAY": "Perşembe",
+    "FRIDAY": "Cuma",
+    "SATURDAY": "Cumartesi",
+    "SUNDAY": "Pazar"
+  };
+  return map[day] || day;
+};
+
+function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuccess }) {
 
   const [tenants, setTenants] = useState([]);
   const [selectedTenant, setSelectedTenant] = useState('');
   const [price, setPrice] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // --- YENİ KİRALAMA TİPİ STATE'İ ---
+  const [rentalType, setRentalType] = useState('single'); // 'single' veya 'monthly'
 
   useEffect(() => {
     if (show) {
@@ -34,30 +50,48 @@ function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuc
     }
   }, [show]);
 
+  // --- SUBMIT FONKSİYONU GÜNCELLENDİ (Toplu/Tekil) ---
   const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    const rentalData = { // <-- Değişti
-      stallId: stall.id,
-      tenantId: selectedTenant,
-      marketplaceId: marketId,
-      rentalDate: rentalDate, // <-- DEĞİŞİKLİK: 'dayOfWeek' yerine 'rentalDate'
-      price: parseFloat(price)
-    };
+    let apiCall;
+    const { day, month, year } = getDayAndMonthFromDate(rentalDate);
 
-    rentalService.createRental(rentalData) // <-- DEĞİŞİKLİK: 'rentalService' kullanılıyor
-      .then(() => {
+    if (rentalType === 'monthly') {
+      // --- TOPLU (AYLIK) İSTEK ---
+      const batchData = {
+        stallId: stall.id,
+        tenantId: selectedTenant,
+        marketplaceId: marketId,
+        price: parseFloat(price),
+        year: year,
+        month: month,
+        dayOfWeek: day
+      };
+      apiCall = rentalService.createBatchRental(batchData);
+    } else {
+      // --- TEKİL (GÜNLÜK) İSTEK (Eski kod) ---
+      const rentalData = {
+        stallId: stall.id,
+        tenantId: selectedTenant,
+        marketplaceId: marketId,
+        rentalDate: rentalDate,
+        price: parseFloat(price)
+      };
+      apiCall = rentalService.createRental(rentalData);
+    }
+
+    apiCall.then(() => {
         setIsLoading(false);
-        onBookingSuccess(); // Dashboard'u yenilemek için
+        onBookingSuccess();
         handleClose();
       })
       .catch(err => {
         setIsLoading(false);
-        if (err.response && err.response.status === 409) {
-          // Backend'den gelen "zaten dolu" mesajını göster
-          setError(err.response.data);
+        if (err.response && (err.response.status === 409 || err.response.status === 500)) {
+          setError(err.response.data); // Backend'den gelen "Zaten dolu" mesajını göster
         } else {
           setError("Kiralama yapılamadı.");
         }
@@ -69,11 +103,17 @@ function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuc
     return null;
   }
 
+  // Tarih bilgilerini hesapla
+  const { day: dayName, monthName } = getDayAndMonthFromDate(rentalDate);
+
+  const translatedDayName = translateDay(dayName);
+
   const handleClose = () => {
     setSelectedTenant('');
     setPrice('');
     setError(null);
     setIsLoading(false);
+    setRentalType('single'); // YENİ: Modalı kapatırken tipi sıfırla
     onClose();
   };
 
@@ -81,12 +121,37 @@ function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuc
     <div className="modal-overlay">
       <div className="modal-content card">
         <h2>Tahta Kirala</h2>
-        {/* DEĞİŞİKLİK: 'day' yerine 'rentalDate' göster */}
-        <p><strong>Tahta:</strong> {stall.stallNumber} | <strong>Tarih:</strong> {rentalDate}</p>
+        <p><strong>Tahta:</strong> {stall.stallNumber} | <strong>Seçilen Tarih:</strong> {rentalDate}</p>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+
+          {/* --- YENİ KİRALAMA TİPİ SEÇENEĞİ --- */}
+          <div className="form-group">
+            <label>Kiralama Tipi:</label>
+            <div className="rental-type-options">
+              <label className="radio-item">
+                <input 
+                  type="radio" 
+                  value="single"
+                  checked={rentalType === 'single'} 
+                  onChange={(e) => setRentalType(e.target.value)}
+                />
+                Sadece bugün ({rentalDate})
+              </label>
+              <label className="radio-item">
+                <input 
+                  type="radio" 
+                  value="monthly"
+                  checked={rentalType === 'monthly'} 
+                  onChange={(e) => setRentalType(e.target.value)}
+                />
+                Tüm {monthName} ayı {translatedDayName} günleri
+              </label>
+            </div>
+          </div>
+
           <div className="form-group">
             <label>Kiracı Seç:</label>
             <select 
