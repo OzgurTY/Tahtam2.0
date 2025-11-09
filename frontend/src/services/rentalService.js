@@ -25,7 +25,7 @@ const deleteRental = (rentalId) => {
 }
 
 const deleteBatchRentals = (rentalIds) => {
-  return axios.delete(`${API_URL}/batch`), { data: rentalIds };
+  return axios.delete(`${API_URL}/batch`, { data: rentalIds });
 }
 
 const updateRentalStatus = (rentalId, status) => {
