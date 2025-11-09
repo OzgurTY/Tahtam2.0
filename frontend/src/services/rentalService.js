@@ -24,11 +24,16 @@ const deleteRental = (rentalId) => {
   return axios.get(`${API_URL}/${rentalId}`);
 }
 
+const updateRentalStatus = (rentalId, status) => {
+  return axios.get(`${API_URL}/${rentalId}/status`, {status});
+}
+
 const rentalService = {
   createRental,
   getAllRentals,
   createBatchRental,
   deleteRental,
+  updateRentalStatus,
 };
 
 export default rentalService;

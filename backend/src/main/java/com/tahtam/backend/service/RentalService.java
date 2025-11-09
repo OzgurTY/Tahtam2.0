@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tahtam.backend.dto.BatchRentalRequest;
+import com.tahtam.backend.model.PaymentStatus;
 import com.tahtam.backend.model.Rental;
 import com.tahtam.backend.repository.RentalRepository;
 
@@ -63,6 +64,12 @@ public class RentalService {
             }
         }
         return rentalRepository.saveAll(createdRentals);
+    }
+
+    public Rental updatePaymentStatus(String rentalId, PaymentStatus newStatus) {
+        Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new IllegalStateException("Kiralama kaydı bulunamadı: " + rentalId));
+        rental.setStatus(newStatus);
+        return rentalRepository.save(rental);
     }
 
 }

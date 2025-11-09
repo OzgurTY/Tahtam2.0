@@ -26,8 +26,33 @@
   text-align: right;
 }
 
-.delete-button {
-  background-color: #dc3545;
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.status-PAID {
+  background-color: #e0f8e9; /* Açık Yeşil */
+  color: #28a745; /* Koyu Yeşil */
+}
+
+.status-badge.status-PENDING {
+  background-color: #fff8e1; /* Açık Sarı */
+  color: #ffc107; /* Koyu Sarı */
+}
+
+/* Tablodaki İşlem Butonları */
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pay-button {
+  background-color: #28a745;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -36,6 +61,6 @@
   font-size: 13px;
   font-weight: 500;
 }
-.delete-button:hover {
-  background-color: #c82333;
+.pay-button:hover {
+  background-color: #218838;
 }

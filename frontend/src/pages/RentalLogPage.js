@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import rentalService from '../services/rentalService';
 import stallService from '../services/stallService';
 import tenantService from '../services/tenantService';
-import ConfirmationModal from '../components/ConfirmationModal'; // <-- YENİ İMPORT
+import ConfirmationModal from '../components/ConfirmationModal';
 import './RentalLogPage.css';
 
 function RentalLogPage() {
@@ -12,7 +12,6 @@ function RentalLogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- YENİ SİLME MODALI STATE'LERİ ---
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [rentalToDelete, setRentalToDelete] = useState(null);
 
@@ -22,8 +21,8 @@ function RentalLogPage() {
   const tenantMap = useMemo(() => 
     new Map(tenants.map(t => [t.id, t.name])), [tenants]);
 
+  // Verileri çeken ana fonksiyon
   const fetchAllData = async () => {
-    // ... (Bu fonksiyon değişmedi)
     setIsLoading(true);
     setError(null);
     try {
@@ -32,7 +31,11 @@ function RentalLogPage() {
         stallService.getAllStalls(),
         tenantService.getTenants()
       ]);
-      setRentals(rentalsRes.data);
+      // YENİ: Kayıtları tarihe göre (en yeniden en eskiye) sırala
+      const sortedRentals = rentalsRes.data.sort((a, b) => 
+        new Date(b.rentalDate) - new Date(a.rentalDate)
+      );
+      setRentals(sortedRentals);
       setStalls(stallsRes.data);
       setTenants(tenantsRes.data);
     } catch (err) {
@@ -47,18 +50,17 @@ function RentalLogPage() {
     fetchAllData();
   }, []);
 
-  // --- YENİ SİLME FONKSİYONLARI ---
+  // --- SİLME FONKSİYONLARI (Değişiklik yok) ---
   const handleDeleteClick = (rental) => {
     setRentalToDelete(rental);
     setIsConfirmModalOpen(true);
   };
-
   const handleConfirmDelete = () => {
     if (!rentalToDelete) return;
     setError(null);
     rentalService.deleteRental(rentalToDelete.id)
       .then(() => {
-        fetchAllData(); // Tüm listeyi yenile
+        fetchAllData(); 
         closeConfirmModal();
       })
       .catch(err => {
@@ -67,10 +69,28 @@ function RentalLogPage() {
         closeConfirmModal();
       });
   };
-
   const closeConfirmModal = () => {
     setIsConfirmModalOpen(false);
     setRentalToDelete(null);
+  };
+
+  // --- YENİ "ÖDENDİ İŞARETLE" FONKSİYONU ---
+  const handleMarkAsPaid = (rentalId) => {
+    setError(null);
+    rentalService.updateRentalStatus(rentalId, "PAID") // API'yi çağır
+      .then(() => {
+        // Başarılı olursa, listeyi tekrar çekmek yerine
+        // frontend'deki listeyi manuel güncelleyelim (daha hızlı)
+        setRentals(prevRentals => 
+          prevRentals.map(r => 
+            r.id === rentalId ? { ...r, status: "PAID" } : r
+          )
+        );
+      })
+      .catch(err => {
+        setError('Ödeme durumu güncellenirken bir hata oluştu.');
+        console.error(err);
+      });
   };
 
   return (
@@ -89,19 +109,34 @@ function RentalLogPage() {
                 <th>Tarih</th>
                 <th>Tahta No</th>
                 <th>Kiracı</th>
+                <th>Durum</th> {/* <-- YENİ SÜTUN */}
                 <th>Fiyat</th>
-                <th>İşlemler</th> {/* <-- YENİ SÜTUN */}
+                <th>İşlemler</th>
               </tr>
             </thead>
             <tbody>
               {rentals.length > 0 ? rentals.map(rental => (
                 <tr key={rental.id}>
                   <td>{rental.rentalDate}</td>
-                  <td>{stallMap.get(rental.stallId) || 'Bilinmeyen Tahta'}</td>
-                  <td>{tenantMap.get(rental.tenantId) || 'Bilinmeyen Kiracı'}</td>
-                  <td>{rental.price.toFixed(2)} ₺</td>
+                  <td>{stallMap.get(rental.stallId) || '...'}</td>
+                  <td>{tenantMap.get(rental.tenantId) || '...'}</td>
+                  {/* --- YENİ DURUM GÖSTERGESİ --- */}
                   <td>
-                    {/* --- YENİ SİLME BUTONU --- */}
+                    <span className={`status-badge status-${rental.status}`}>
+                      {rental.status === 'PAID' ? 'Ödendi' : 'Bekleniyor'}
+                    </span>
+                  </td>
+                  <td>{rental.price.toFixed(2)} ₺</td>
+                  {/* --- YENİ İŞLEM BUTONLARI --- */}
+                  <td className="actions-cell">
+                    {rental.status === 'PENDING' && (
+                      <button 
+                        className="pay-button"
+                        onClick={() => handleMarkAsPaid(rental.id)}
+                      >
+                        Ödendi İşaretle
+                      </button>
+                    )}
                     <button 
                       className="delete-button"
                       onClick={() => handleDeleteClick(rental)}
@@ -112,7 +147,7 @@ function RentalLogPage() {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="5">Henüz kiralama kaydı bulunamadı.</td>
+                  <td colSpan="6">Henüz kiralama kaydı bulunamadı.</td>
                 </tr>
               )}
             </tbody>
@@ -120,7 +155,7 @@ function RentalLogPage() {
         )}
       </div>
 
-      {/* --- YENİ MODAL EKLEMESİ --- */}
+      {/* Silme Modalı (Değişiklik yok) */}
       <ConfirmationModal
         show={isConfirmModalOpen}
         onClose={closeConfirmModal}

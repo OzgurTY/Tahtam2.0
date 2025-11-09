@@ -21,4 +21,9 @@ public class Rental {
 
     private Double price;
 
+    private PaymentStatus status;
+    public Rental() {
+        this.status = PaymentStatus.PENDING;
+    }
+
 }
