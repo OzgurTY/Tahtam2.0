@@ -46,8 +46,10 @@
   color: #dc3545;
 }
 
-/* Stall-list stilleri StallPage.css ile aynı,
-   eğer ortak bir CSS dosyasına almadıysanız buraya da ekleyebilirsiniz. */
+.summary-card.income span {
+  color: #28a745;
+}
+
 .stall-list {
   list-style-type: none;
   padding: 0;

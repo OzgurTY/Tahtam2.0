@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:2000/api/rentals';
 /**
  * Yeni bir kiralama (rental) oluşturur.
  * POST /api/rentals
- * @param {object} rentalData (Artık rentalDate içeriyor)
+ * @param {object} rentalData
  */
 const createRental = (rentalData) => {
   return axios.post(API_URL, rentalData);
@@ -24,6 +24,10 @@ const deleteRental = (rentalId) => {
   return axios.delete(`${API_URL}/${rentalId}`);
 }
 
+const deleteBatchRentals = (rentalIds) => {
+  return axios.delete(`${API_URL}/batch`), { data: rentalIds };
+}
+
 const updateRentalStatus = (rentalId, status) => {
   return axios.patch(`${API_URL}/${rentalId}/status`, { status });
 };
@@ -33,6 +37,7 @@ const rentalService = {
   getAllRentals,
   createBatchRental,
   deleteRental,
+  deleteBatchRentals,
   updateRentalStatus,
 };
 

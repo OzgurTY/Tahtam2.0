@@ -64,3 +64,41 @@
 .pay-button:hover {
   background-color: #218838;
 }
+
+/* ... (mevcut stiller) ... */
+
+/* YENİ: Toplu işlem kutusu */
+.batch-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #b3e0ff;
+}
+.batch-actions p {
+  margin: 0;
+  font-weight: 500;
+  color: #0056b3;
+}
+
+/* YENİ: Checkbox sütunu stilleri */
+.checkbox-cell {
+  width: 40px;
+  text-align: center;
+  padding-left: 15px;
+  padding-right: 5px;
+}
+.checkbox-cell input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.log-table tbody tr.selected-row {
+  background-color: #fff8e1;
+}
+.log-table tbody tr.selected-row:hover {
+  background-color: #fff0c7;
+}

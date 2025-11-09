@@ -22,6 +22,8 @@ public interface RentalRepository extends MongoRepository<Rental, String> {
 
     void deleteByStallId(String stallId);
 
+    void deleteByIdIn(List<String> ids);
+
     List<Rental> findByRentalDateBetween(LocalDate startDate, LocalDate enDate);
 
 }

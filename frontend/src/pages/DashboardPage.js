@@ -141,9 +141,9 @@ function DashboardPage() {
         <div className="summary-cards">
           {/* --- YENİ KART: AYLIK GELİR --- */}
           <div className="summary-card income">
-            <h4>Bu Ayki Toplam Gelir</h4>
-            <span>{incomeReport.totalIncome.toFixed(2)} ₺</span>
-            <small>{incomeReport.totalRentals} kiralama</small>
+            <h4>Bu Ay Tahsil Edilen</h4>
+            <span>{incomeReport.totalCollectedIncome.toFixed(2)} ₺</span>
+            <small>Beklenen: {incomeReport.totalExpectedIncome.toFixed(2)} ₺</small>
           </div>
           <div className="summary-card available">
             <h4>Boş Tahta (Bugün)</h4>

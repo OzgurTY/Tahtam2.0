@@ -37,6 +37,13 @@ public class RentalService {
         rentalRepository.deleteById(rentalId);
     }
 
+    public void deleteBatchRentals(List<String> rentalIds) {
+        if (rentalIds == null || rentalIds.isEmpty()) {
+            return;
+        }
+        rentalRepository.deleteByIdIn(rentalIds);
+    }
+
     public List<Rental> getAllRentals() {
         return rentalRepository.findAll();
     }

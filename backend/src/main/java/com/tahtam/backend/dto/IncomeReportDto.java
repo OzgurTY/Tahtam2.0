@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class IncomeReportDto {
     
-    private double totalIncome;
+    private double totalExpectedIncome;
+    private double totalCollectedIncome;
     private long totalRentals;
 
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.tahtam.backend.dto.IncomeReportDto;
 import com.tahtam.backend.dto.MarketDaySummary;
 import com.tahtam.backend.model.Marketplace;
+import com.tahtam.backend.model.PaymentStatus;
 import com.tahtam.backend.model.Rental;
 import com.tahtam.backend.model.Stall;
 import com.tahtam.backend.repository.MarketplaceRepository;
@@ -54,11 +55,13 @@ public class DashboardService {
 
     public IncomeReportDto getIncomeReport(LocalDate starDate, LocalDate endDate) {
         List<Rental> rentals = rentalRepository.findByRentalDateBetween(starDate, endDate);
-        double totalIncome = rentals.stream().mapToDouble(Rental::getPrice).sum();
+        double totalExpected = rentals.stream().mapToDouble(Rental::getPrice).sum();
+        double totalCollected = rentals.stream().filter(r -> r.getStatus() == PaymentStatus.PAID).mapToDouble(Rental::getPrice).sum();
         long totalRentals = rentals.size();
 
         IncomeReportDto report = new IncomeReportDto();
-        report.setTotalIncome(totalIncome);
+        report.setTotalExpectedIncome(totalExpected);
+        report.setTotalCollectedIncome(totalCollected);
         report.setTotalRentals(totalRentals);
         return report;
     }

@@ -12,8 +12,12 @@ function RentalLogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // --- SİLME MODALI STATE'LERİ ---
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [rentalToDelete, setRentalToDelete] = useState(null);
+  const [rentalToDelete, setRentalToDelete] = useState(null); // Tekil silme için
+
+  // --- YENİ TOPLU SEÇİM STATE'İ ---
+  const [selectedRentals, setSelectedRentals] = useState(new Set());
 
   const stallMap = useMemo(() => 
     new Map(stalls.map(s => [s.id, s.stallNumber])), [stalls]);
@@ -21,8 +25,8 @@ function RentalLogPage() {
   const tenantMap = useMemo(() => 
     new Map(tenants.map(t => [t.id, t.name])), [tenants]);
 
-  // Verileri çeken ana fonksiyon
   const fetchAllData = async () => {
+    // ... (Bu fonksiyon değişmedi, sadece setIsLoading(true) en başa alındı) ...
     setIsLoading(true);
     setError(null);
     try {
@@ -31,7 +35,6 @@ function RentalLogPage() {
         stallService.getAllStalls(),
         tenantService.getTenants()
       ]);
-      // YENİ: Kayıtları tarihe göre (en yeniden en eskiye) sırala
       const sortedRentals = rentalsRes.data.sort((a, b) => 
         new Date(b.rentalDate) - new Date(a.rentalDate)
       );
@@ -50,18 +53,40 @@ function RentalLogPage() {
     fetchAllData();
   }, []);
 
-  // --- SİLME FONKSİYONLARI (Değişiklik yok) ---
+  // --- SİLME FONKSİYONLARI (GÜNCELLENDİ) ---
   const handleDeleteClick = (rental) => {
-    setRentalToDelete(rental);
+    setRentalToDelete(rental); // Tekil silme için ayarla
     setIsConfirmModalOpen(true);
   };
+
+  // YENİ: Toplu silme modalını açan fonksiyon
+  const handleBatchDeleteClick = () => {
+    setRentalToDelete(null); // Tekil silmeyi temizle
+    setIsConfirmModalOpen(true);
+  };
+
   const handleConfirmDelete = () => {
-    if (!rentalToDelete) return;
     setError(null);
-    rentalService.deleteRental(rentalToDelete.id)
+
+    let deletePromise;
+
+    if (rentalToDelete) {
+      // --- Tekil Silme ---
+      deletePromise = rentalService.deleteRental(rentalToDelete.id);
+    } else if (selectedRentals.size > 0) {
+      // --- Toplu Silme ---
+      const idsToDelete = Array.from(selectedRentals);
+      deletePromise = rentalService.deleteBatchRentals(idsToDelete);
+    } else {
+      closeConfirmModal();
+      return;
+    }
+
+    deletePromise
       .then(() => {
         fetchAllData(); 
         closeConfirmModal();
+        setSelectedRentals(new Set()); // Seçimleri sıfırla
       })
       .catch(err => {
         setError('Kiralama kaydı silinirken bir hata oluştu.');
@@ -74,13 +99,11 @@ function RentalLogPage() {
     setRentalToDelete(null);
   };
 
-  // --- YENİ "ÖDENDİ İŞARETLE" FONKSİYONU ---
   const handleMarkAsPaid = (rentalId) => {
+    // ... (Bu fonksiyon değişmedi)
     setError(null);
-    rentalService.updateRentalStatus(rentalId, "PAID") // API'yi çağır
+    rentalService.updateRentalStatus(rentalId, "PAID")
       .then(() => {
-        // Başarılı olursa, listeyi tekrar çekmek yerine
-        // frontend'deki listeyi manuel güncelleyelim (daha hızlı)
         setRentals(prevRentals => 
           prevRentals.map(r => 
             r.id === rentalId ? { ...r, status: "PAID" } : r
@@ -93,11 +116,49 @@ function RentalLogPage() {
       });
   };
 
+  // --- YENİ SEÇİM FONKSİYONLARI ---
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      // Hepsini seç
+      const allIds = new Set(rentals.map(r => r.id));
+      setSelectedRentals(allIds);
+    } else {
+      // Hepsini bırak
+      setSelectedRentals(new Set());
+    }
+  };
+
+  const handleSelectOne = (event, rentalId) => {
+    const newSelection = new Set(selectedRentals);
+    if (event.target.checked) {
+      newSelection.add(rentalId);
+    } else {
+      newSelection.delete(rentalId);
+    }
+    setSelectedRentals(newSelection);
+  };
+
+  // Hepsini seç checkbox'ının durumunu belirle
+  const isAllSelected = rentals.length > 0 && selectedRentals.size === rentals.length;
+
   return (
     <div className="page-container">
       <h2>Kiralama Kayıtları (Loglar)</h2>
 
       {error && <div className="error-message">{error}</div>}
+
+      {/* --- YENİ TOPLU İŞLEM ALANI --- */}
+      {selectedRentals.size > 0 && (
+        <div className="batch-actions card">
+          <p>{selectedRentals.size} kayıt seçildi.</p>
+          <button 
+            className="delete-button"
+            onClick={handleBatchDeleteClick}
+          >
+            Seçilenleri Sil
+          </button>
+        </div>
+      )}
 
       <div className="card">
         {isLoading ? (
@@ -106,28 +167,43 @@ function RentalLogPage() {
           <table className="log-table">
             <thead>
               <tr>
+                {/* --- YENİ CHECKBOX SÜTUNU --- */}
+                <th className="checkbox-cell">
+                  <input 
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={handleSelectAll}
+                    title="Tümünü Seç"
+                  />
+                </th>
                 <th>Tarih</th>
                 <th>Tahta No</th>
                 <th>Kiracı</th>
-                <th>Durum</th> {/* <-- YENİ SÜTUN */}
+                <th>Durum</th>
                 <th>Fiyat</th>
                 <th>İşlemler</th>
               </tr>
             </thead>
             <tbody>
               {rentals.length > 0 ? rentals.map(rental => (
-                <tr key={rental.id}>
+                <tr key={rental.id} className={selectedRentals.has(rental.id) ? 'selected-row' : ''}>
+                  {/* --- YENİ CHECKBOX SÜTUNU --- */}
+                  <td className="checkbox-cell">
+                    <input 
+                      type="checkbox"
+                      checked={selectedRentals.has(rental.id)}
+                      onChange={(e) => handleSelectOne(e, rental.id)}
+                    />
+                  </td>
                   <td>{rental.rentalDate}</td>
                   <td>{stallMap.get(rental.stallId) || '...'}</td>
                   <td>{tenantMap.get(rental.tenantId) || '...'}</td>
-                  {/* --- YENİ DURUM GÖSTERGESİ --- */}
                   <td>
                     <span className={`status-badge status-${rental.status}`}>
                       {rental.status === 'PAID' ? 'Ödendi' : 'Bekleniyor'}
                     </span>
                   </td>
                   <td>{rental.price.toFixed(2)} ₺</td>
-                  {/* --- YENİ İŞLEM BUTONLARI --- */}
                   <td className="actions-cell">
                     {rental.status === 'PENDING' && (
                       <button 
@@ -147,7 +223,7 @@ function RentalLogPage() {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="6">Henüz kiralama kaydı bulunamadı.</td>
+                  <td colSpan="7">Henüz kiralama kaydı bulunamadı.</td>
                 </tr>
               )}
             </tbody>
@@ -155,16 +231,16 @@ function RentalLogPage() {
         )}
       </div>
 
-      {/* Silme Modalı (Değişiklik yok) */}
       <ConfirmationModal
         show={isConfirmModalOpen}
         onClose={closeConfirmModal}
         onConfirm={handleConfirmDelete}
-        title="Kiralama Kaydını Sil"
+        // --- YENİ: Dinamik Mesaj ---
+        title={rentalToDelete ? "Kiralama Kaydını Sil" : "Seçilen Kayıtları Sil"}
         message={
           rentalToDelete 
-            ? `${rentalToDelete.rentalDate} tarihli, ${stallMap.get(rentalToDelete.stallId)} nolu tahta için olan kiralama kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`
-            : "Bu kaydı silmek istediğinizden emin misiniz?"
+            ? `${rentalToDelete.rentalDate} tarihli, ${stallMap.get(rentalToDelete.stallId)} nolu kaydı silmek istediğinizden emin misiniz?`
+            : `${selectedRentals.size} adet kiralama kaydını topluca silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`
         }
       />
     </div>

@@ -70,6 +70,16 @@ public class RentalController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/batch")
+    public ResponseEntity<Void> deleteBatchRentals(@RequestBody List<String> rentalIds) {
+        try {
+            rentalService.deleteBatchRentals(rentalIds);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable String id, @RequestBody Map<String, String> body) {
         try {
