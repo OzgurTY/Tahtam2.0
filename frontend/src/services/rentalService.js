@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // API YOLU GÜNCELLENDİ
-const API_URL = 'http://localhost:2000/api/rentals';
+const API_URL = '/api/rentals';
 
 /**
  * Yeni bir kiralama (rental) oluşturur.

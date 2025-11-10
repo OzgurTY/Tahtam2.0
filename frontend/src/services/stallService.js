@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2000/api/stalls';
+const API_URL = '/api/stalls';
 
 /**
  * Belirli bir pazaryerine ait tahtaları getirir.

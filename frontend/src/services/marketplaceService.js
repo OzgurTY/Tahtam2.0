@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2000/api/marketplaces';
+const API_URL = '/api/marketplaces';
 
 const getMarketplaces = () => {
   return axios.get(API_URL);

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2000/api/tenants';
+const API_URL = '/api/tenants';
 
 /**
  * Tüm kiracıları backend'den çeker.

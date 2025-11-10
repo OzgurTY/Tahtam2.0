@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2000/api/dashboard';
+const API_URL = '/api/dashboard';
 
 /**
  * Belirli bir pazar ve TARİH için "boş tahta" özetini getirir.
