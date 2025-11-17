@@ -3,6 +3,7 @@ import marketplaceService from '../services/marketplaceService';
 import dashboardService from '../services/dashboardService';
 import BookingModal from '../components/BookingModal';
 import './DashboardPage.css';
+import MassRentalModal from '../components/MassRentalModal'; 
 
 // ... (getTodayString fonksiyonu aynı)
 const getTodayString = () => {
@@ -20,6 +21,7 @@ function DashboardPage() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stallToBook, setStallToBook] = useState(null);
+  const [isMassModalOpen, setIsMassModalOpen] = useState(false); 
 
   // --- YENİ RAPOR STATE'İ ---
   const [incomeReport, setIncomeReport] = useState(null); // Aylık gelir raporunu tutar
@@ -132,6 +134,16 @@ function DashboardPage() {
             disabled={!selectedMarketId}
           />
         </div>
+        <div className="form-group" style={{display: 'flex', alignItems: 'flex-end'}}>
+          <button 
+            className="submit-button" 
+            style={{height: '42px', width: '100%'}} // Tarih kutusuyla hizalamak için
+            onClick={() => setIsMassModalOpen(true)}
+            disabled={!selectedMarketId} // Pazar seçili değilse pasif olsun
+          >
+            Toplu Kiralama Yap
+          </button>
+        </div>
       </div>
 
       {isLoading && <div className="card"><p>Yükleniyor...</p></div>}
@@ -188,6 +200,12 @@ function DashboardPage() {
         rentalDate={selectedDate}
         marketId={selectedMarketId}
         onBookingSuccess={handleBookingSuccess}
+      />
+      <MassRentalModal
+          show={isMassModalOpen}
+          onClose={() => setIsMassModalOpen(false)}
+          marketId={selectedMarketId}
+          onSuccess={() => fetchSummaryAndReport(selectedMarketId, selectedDate)}
       />
     </div>
   );

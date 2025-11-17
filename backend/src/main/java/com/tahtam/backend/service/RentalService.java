@@ -1,6 +1,5 @@
 package com.tahtam.backend.service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -50,26 +49,49 @@ public class RentalService {
 
     public List<Rental> createBatchRentals(BatchRentalRequest request) {
         List<Rental> createdRentals = new ArrayList<>();
-        DayOfWeek targetDay = DayOfWeek.valueOf(request.getDayOfWeek().name());
         YearMonth yearMonth = YearMonth.of(request.getYear(), request.getMonth());
         int daysInMonth = yearMonth.lengthOfMonth();
 
+        List<LocalDate> targetDates = new ArrayList<>();
+        
         for (int day = 1; day <= daysInMonth; day++) {
             LocalDate date = yearMonth.atDay(day);
-            if (date.getDayOfWeek() == targetDay) {
-                Optional<Rental> existingRental = rentalRepository.findByStallIdAndRentalDate(request.getStallId(), date);
+            boolean isTargetDay = request.getDaysOfWeek().stream()
+                .anyMatch(d -> d.name().equals(date.getDayOfWeek().name()));
+            
+            if (isTargetDay) {
+                targetDates.add(date);
+            }
+        }
+
+        if (targetDates.isEmpty() || request.getStallIds().isEmpty()) {
+            return createdRentals;
+        }
+
+        int totalSlots = request.getStallIds().size() * targetDates.size();
+        Double pricePerSlot = request.getPrice() / totalSlots;
+
+        for (String stallId : request.getStallIds()) {
+            for (LocalDate date : targetDates) {
+                
+                Optional<Rental> existingRental = rentalRepository.findByStallIdAndRentalDate(stallId, date);
                 if (existingRental.isPresent()) {
-                    throw new IllegalStateException("Toplu kiralama başarısız. " + date + " tarihi zaten dolu.");
+                    throw new IllegalStateException(
+                        "Toplu işlem başarısız. Tahta (" + stallId + ") " + date + " tarihinde zaten dolu."
+                    );
                 }
+
                 Rental newRental = new Rental();
-                newRental.setStallId(request.getStallId());
+                newRental.setStallId(stallId);
                 newRental.setTenantId(request.getTenantId());
                 newRental.setMarketplaceId(request.getMarketplaceId());
-                newRental.setPrice(request.getPrice());
+                newRental.setPrice(pricePerSlot);
                 newRental.setRentalDate(date);
+                
                 createdRentals.add(newRental);
             }
         }
+
         return rentalRepository.saveAll(createdRentals);
     }
 

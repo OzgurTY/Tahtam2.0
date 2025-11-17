@@ -170,13 +170,17 @@ function BookingModal({ show, onClose, stall, rentalDate, marketId, onBookingSuc
           </div>
 
           <div className="form-group">
-            <label>Kira Bedeli (Fiyat):</label>
+            <label>
+              {rentalType === 'monthly' 
+                ? 'Toplam Paket Fiyatı (Tüm Ay):' 
+                : 'Kira Bedeli (Tek Gün):'}
+            </label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               required
-              placeholder="Örn: 150.0"
+              placeholder={rentalType === 'monthly' ? "Örn: 1000 (Toplu)" : "Örn: 250 (Günlük)"}
             />
           </div>
 
