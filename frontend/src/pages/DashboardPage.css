@@ -6,6 +6,7 @@
 
 .dashboard-controls .form-group {
   flex: 1;
+  justify-content: center;
 }
 
 .summary-cards {

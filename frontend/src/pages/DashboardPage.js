@@ -134,7 +134,7 @@ function DashboardPage() {
             disabled={!selectedMarketId}
           />
         </div>
-        <div className="form-group" style={{display: 'flex', alignItems: 'flex-end'}}>
+        <div className="form-group" style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'center'}}>
           <button 
             className="submit-button" 
             style={{height: '42px', width: '100%'}} // Tarih kutusuyla hizalamak için
